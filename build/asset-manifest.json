@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/guitar/static/css/main.92dc7df6.chunk.css",
+    "main.js": "/guitar/static/js/main.2e2a2c15.chunk.js",
+    "runtime-main.js": "/guitar/static/js/runtime-main.345a3304.js",
+    "static/js/2.cfd31c9c.chunk.js": "/guitar/static/js/2.cfd31c9c.chunk.js",
+    "index.html": "/guitar/index.html",
+    "precache-manifest.2a41afa8fbb0415b53b52f449e686cf2.js": "/guitar/precache-manifest.2a41afa8fbb0415b53b52f449e686cf2.js",
+    "service-worker.js": "/guitar/service-worker.js",
+    "static/js/2.cfd31c9c.chunk.js.LICENSE.txt": "/guitar/static/js/2.cfd31c9c.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.345a3304.js",
+    "static/js/2.cfd31c9c.chunk.js",
+    "static/css/main.92dc7df6.chunk.css",
+    "static/js/main.2e2a2c15.chunk.js"
+  ]
+}
