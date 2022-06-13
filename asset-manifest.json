@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/static/css/main.92dc7df6.chunk.css",
-    "main.js": "/static/js/main.2e2a2c15.chunk.js",
-    "runtime-main.js": "/static/js/runtime-main.cff04c13.js",
-    "static/js/2.792561a8.chunk.js": "/static/js/2.792561a8.chunk.js",
-    "index.html": "/index.html",
-    "precache-manifest.0aa7127e78a2ce75f7bed0929e667004.js": "/precache-manifest.0aa7127e78a2ce75f7bed0929e667004.js",
-    "service-worker.js": "/service-worker.js",
-    "static/js/2.792561a8.chunk.js.LICENSE.txt": "/static/js/2.792561a8.chunk.js.LICENSE.txt"
+    "main.css": "/guitar/static/css/main.92dc7df6.chunk.css",
+    "main.js": "/guitar/static/js/main.2e2a2c15.chunk.js",
+    "runtime-main.js": "/guitar/static/js/runtime-main.345a3304.js",
+    "static/js/2.cfd31c9c.chunk.js": "/guitar/static/js/2.cfd31c9c.chunk.js",
+    "index.html": "/guitar/index.html",
+    "precache-manifest.2a41afa8fbb0415b53b52f449e686cf2.js": "/guitar/precache-manifest.2a41afa8fbb0415b53b52f449e686cf2.js",
+    "service-worker.js": "/guitar/service-worker.js",
+    "static/js/2.cfd31c9c.chunk.js.LICENSE.txt": "/guitar/static/js/2.cfd31c9c.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.cff04c13.js",
-    "static/js/2.792561a8.chunk.js",
+    "static/js/runtime-main.345a3304.js",
+    "static/js/2.cfd31c9c.chunk.js",
     "static/css/main.92dc7df6.chunk.css",
     "static/js/main.2e2a2c15.chunk.js"
   ]
