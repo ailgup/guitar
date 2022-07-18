@@ -18,17 +18,7 @@ screenshots:
 
 ---
 
-Run `yarn build` to build the app, then just serve the build folder.
-
-(with https://www.npmjs.com/package/serve for example, or any other webhost)
-
----
-
-or run it with docker
-
-`docker build -t ugrip --build-arg CORS_SERVER=http://0.0.0.0:5001/ .`
-
-`docker run -p 5000:5000 -p 5001:5001 ugrip`
+Run `yarn start` for local dev
 
 ---
 To Deploy to gh-pages
