@@ -5,7 +5,8 @@ import {
   Button,
   RangeInput,
   Box,
-  Text
+  Text,
+  Grid
 } from 'grommet';
 
 import { parse, transpose, prettyPrint } from 'chord-magic';
@@ -25,7 +26,17 @@ function formatChords(chords) {
   formattedChords = formattedChords.replace(/\[tab\]/g, '<div>');
   formattedChords = formattedChords.replace(/\[\/tab\]/g, '</div>');
 
-  return { __html: formattedChords };
+  const lines = (formattedChords.match(/\n/g) || '').length + 1
+  console.log(":Lines:"+lines)
+  const splitString = formattedChords.split(/\n/g)
+  let first_half = splitString.slice(0,lines/2).join("");
+  let second_half = splitString.slice(lines/2,lines).join("");
+  let first_third = splitString.slice(0,lines/3).join("");
+  let second_third = splitString.slice(lines/3,lines*2/3).join("");
+  let third_third = splitString.slice(lines*2/3,lines).join("");
+let ary = [{ __html: formattedChords },{ __html: first_half },{ __html: second_half },{ __html: first_third },{ __html: second_third },{ __html: third_third },{__html: ""}];
+  console.log(ary)
+  return ary
 }
 
 
@@ -65,6 +76,11 @@ function App() {
   const [simplify, setSimplify] = useState(false);
 
   const [transposeStep, setTransposeStep] = useState(0);
+  
+  const [fontStep, setFontStep] = useState(10);
+  
+  const [colStep, setColStep] = useState(1);
+  
   const [transposedChords, setTransposedChords] = useState(chords);
 
   const renderChords = useCallback(() => formatChords(transposedChords), [transposedChords]);
@@ -88,9 +104,9 @@ function App() {
         const storeJson = store.getAttribute('data-content');
         const storeData = JSON.parse(storeJson);
         const pagination = storeData.store.page.data.pagination; //current, total
-        console.log(storeData)
+        //console.log(storeData)
         const searchResults = storeData.store.page.data.results;
-        console.log(searchResults)
+        //console.log(searchResults)
         var table = [<thead><tr><th>Artist</th><th>Song</th><th>Rating</th><th>Votes</th><th>Type</th></tr></thead>];
         var prev = {song_name:"",artist_name:""}
         for (let [key,value] of Object.entries(searchResults)) {
@@ -115,7 +131,7 @@ function App() {
                     prev = value
                     
                     table.push(
-                        <tr key={"row-"+key}>
+				<tr style={{ backgroundColor: value.type==="Tabs"?"LightGrey":"white"}} key={"row-"+key}>
                             <td key={"artist-"+key}>                                
                                     {artist_name}
                             </td>
@@ -159,7 +175,7 @@ function App() {
         const storeJson = store.getAttribute('data-content');
 
         const storeData = JSON.parse(storeJson);
-        console.log(storeData)
+        //console.log(storeData)
         const chordArray = storeData.store.page.data.tab_view.applicature
         var parsedShapes = []
         if (chordArray != null){
@@ -176,7 +192,7 @@ function App() {
         const [parsedSongName] = findInObject(storeData, 'song_name');
         const [parsedArtistName] = findInObject(storeData, 'artist_name');
         const [parsedChords] = findInObject(storeData, 'content');
-        console.log(parsedChords)
+        //console.log(parsedChords)
         setArtist(parsedArtistName);
         setSong(parsedSongName);
         setChords(parsedChords);
@@ -191,7 +207,7 @@ function App() {
         console.log('state changed', uri)
         // write your callback function here
         loadSong()
-		setSearchResults()
+		setSearchResults("")
       }, [uri,loadSong]);
      
   useEffect(() => {
@@ -273,31 +289,76 @@ function App() {
   return (
     <>
       <div className="controls">
-        <form onSubmit={e =>loadSearch(e,1)} className="commentForm">
-            <Box pad="none" style={{ flexDirection: 'row' }}>
+        <Grid
+			  rows={["xsmall","auto","auto"]}
+			  columns={["medium","small","small"]}
+			  gap="small"
+			  areas={[
+					{ name: 'searchBox', start: [0, 0], end: [0, 1] },
+					{ name: 'searchButton', start: [1, 0], end: [1, 0] },
+					{ name: 'downloadButton', start: [1, 1], end: [1, 1] },
+					{ name: 'sliders', start: [2, 0], end: [2, 1] },
+					{ name: 'searchValues', start: [0, 2], end: [2, 2] },
+					{ name: 'searchComboBox', start: [0, 0], end: [1, 1] }
+					
+				  ]}
+			>
+			<Box gridArea="searchComboBox">
+			<form onSubmit={e =>loadSearch(e,1)} className="commentForm">
+            
+			<Box gridArea="searchBox">
                 <TextInput value={search} onChange={e => setSearch(e.target.value)} />
+			</Box>
+			
+			<Box gridArea="searchButton">
                 <Button primary type="submit" label="Search" />
+			</Box>	
+			<Box gridArea="downloadButton">
+				<Button primary onClick={downloadPdf} label="Download PDF" />
             </Box>
-        </form>
-        <div className="searchResults">{searchResults}</div>
-        
-        <TextInput style={{display:"none"}} value={uri} onChange={e => setUri(e.target.value)} />
+			
+			</form>
+			</Box>
+			
+		<Box gridArea="searchValues">
+			<div className="searchResults">{searchResults}</div>
+        </Box>
+        {/*<TextInput style={{display:"none", margin:0}} value={uri} onChange={e => setUri(e.target.value)} />*/}
 
-        <Box className="box-1" pad="none">
+        <Box gridArea="sliders">
           <Text>{`TRANSPOSE: ${transposeStep}`}</Text>
           <RangeInput
-            style={{ minWidth: '200px' }}
+            style={{ minWidth: '100px' }}
             min={-12}
             max={12}
             step={1}
             value={transposeStep}
             onChange={e => setTransposeStep(parseInt(e.currentTarget.value, 10))}
           />
+		  <Text>{`FONT: ${fontStep}`}</Text>
+		  <RangeInput
+            style={{ minWidth: '100px' }}
+            min={1}
+            max={20}
+            step={1}
+            value={fontStep}
+            onChange={e => setFontStep(parseInt(e.currentTarget.value, 10))}
+          />
+		  <Text>{`COLS: ${colStep}`}</Text>
+		  <RangeInput
+            style={{ minWidth: '100px' }}
+            min={1}
+            max={3}
+            step={1}
+            value={colStep}
+            onChange={e => setColStep(parseInt(e.currentTarget.value, 10))}
+          />
         </Box>
+		</Grid>
 
         <Box className="box-2" pad="none" style={{ flexDirection: 'row' }}>
             {/*<Button primary onClick={loadSong} label="LOAD SONG" />*/}
-          <Button primary onClick={downloadPdf} label="DOWNLOAD PDF" />
+          
         </Box>
 
         {/*  <Select
@@ -328,8 +389,24 @@ function App() {
         <div className="artist">{artist}</div>
         <div className="song">{song}</div>
         <div className="chordShapes">{chordShapes}</div>
-            <div id = "chords" className="chords" dangerouslySetInnerHTML={renderChords(transposedChords)}></div>
+		<div className="grid-container">
+            <div style={{fontSize: `${fontStep}px` }} id = "chords" className="chords grid-item" 
+				dangerouslySetInnerHTML={renderChords(transposedChords)
+				[colStep===1 ? 0 : colStep===2 ? 1 : colStep===3?3:6]}>
+			</div>
+			<div style={{fontSize: `${fontStep}px` }} className="chords grid-item" dangerouslySetInnerHTML={renderChords(transposedChords)
+			[colStep===1 ? 6 : colStep===2 ? 2 : colStep===3?4:6]}>
+			</div>
+			<div style={{fontSize: `${fontStep}px` }} className="chords grid-item" dangerouslySetInnerHTML={renderChords(transposedChords)
+			[colStep===1 ? 6 : colStep===2 ? 6 : colStep===3?5:6]}>
+			</div>
+			</div>
       </div>
+	  <div>
+	  <a href="http://www.carloacutis.com/">
+	  <img id="carlo-icon" src={require('./carlo2.png')} height="50px"/>
+	  </a>
+	  </div>
     </>
   );
 }

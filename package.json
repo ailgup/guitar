@@ -1,15 +1,17 @@
 {
-  "name": "ugrip",
+  "name": "guitar",
   "version": "0.1.0",
   "private": false,
   "license": "MIT",
+  "homepage": "https://ailgup.github.io/guitar/",
   "homepage": "",
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
 	"winBuild":"set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
     "cors": "node cors-anywhere.js",
     "serve": "serve build",
+	"predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
