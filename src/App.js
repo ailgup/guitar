@@ -6,7 +6,7 @@ import {
   RangeInput,
   Box,
   Text,
-  Grid
+  Spinner
 } from 'grommet';
 
 import { parse, transpose, prettyPrint } from 'chord-magic';
@@ -62,8 +62,16 @@ function findInObject(obj, key) {
 }
 
 function App() {
+	/* 5 states, pre-search, search, post-search, load, post-load */
+	
+  const [preSearchState, setPreSearchState] = React.useState(true)
+  const [searchState, setSearchState] = React.useState(false)
+  const [postSearchState, setPostSearchState] = React.useState(false)
+  const [loadState, setLoadState] = React.useState(false)
+  const [postLoadState, setPostLoadState] = React.useState(false)
+  
   const [uri, setUri] = useState('');
-  const [search, setSearch] = useState('Matt Maher')
+  const [search, setSearch] = useState('')
   const [chords, setChords] = useState('Search for a song');
   const [artist, setArtist] = useState('');
   const [song, setSong] = useState('');
@@ -71,7 +79,7 @@ function App() {
   const [searchResults, setSearchResults] = useState('');
   const [chordShapes, setChordShapes] = useState([]);
 
-  const [parsingStyle, setParsingStyle] = useState(undefined);
+  //const [parsingStyle, setParsingStyle] = useState(undefined);
   const [halftoneStyle, setHalftoneStyle] = useState('FLATS');
   const [simplify, setSimplify] = useState(false);
 
@@ -93,6 +101,11 @@ function App() {
 		e.stopPropagation();
 		console.log("undefined");
 	}
+
+	setPostLoadState(false);
+	setPreSearchState(false);
+	setSearchState(true);
+
 	var url = `${corsURI}https://www.ultimate-guitar.com/search.php?search_type=title&page=${pge}&value=${encodeURIComponent(search)}`;
     console.log(url)
 	fetch(url)
@@ -136,7 +149,7 @@ function App() {
                                     {artist_name}
                             </td>
                             <td key={"linkcell-"+key}><a key={"link-"+key} href="#chords" 
-                                    onClick={()=>{setUri(value.tab_url)}}>                                  
+                                    onClick={()=>{setLoadState(true);setUri(value.tab_url);}}>                                  
                                     {song_name}
                                 </a></td>
                             <td key={"stars-"+key}>{stars}</td>
@@ -159,12 +172,15 @@ function App() {
 		//table.push(</table>);
 		
         setSearchResults(table);
-            
+		
+		setSearchState(false);
+		setPostSearchState(true);
+		
       });
   }, [search]);
 
   const loadSong = useCallback(() => {
-	console.log("b")
+	  
     if (uri.includes("tabs.ultimate-guitar.com")){
     fetch(`${corsURI}${uri}`)
       .then(res => res.text())
@@ -181,11 +197,14 @@ function App() {
         if (chordArray != null){
         for (let [key, value] of Object.entries(chordArray)) {
             //https://chordgenerator.net/D.png?p=xx0232&f=---132
+			console.log(value[0]);
+			if (value[0] !== undefined){
             var fingers = value[0].fingers.reverse().join('').replace(/0/g, "-")
             var frets = value[0].frets.reverse().join('').replace(/-1/g, "x")
             
             var shape = "https://chordgenerator.net/"+encodeURIComponent(key)+".png?p="+frets+"&f="+fingers+"&s=1";
             parsedShapes.push(<img alt='chord' key={key} src={shape} />)
+			}
         
         }
         }
@@ -197,10 +216,12 @@ function App() {
         setSong(parsedSongName);
         setChords(parsedChords);
         setChordShapes(parsedShapes);
+		setLoadState(false)
+		setPostLoadState(true)
       });
     }
     else{
-        setSong("Invalid URL");
+        setSong("");
     }
   }, [uri]);
      useEffect(() => {
@@ -215,20 +236,7 @@ function App() {
 
     let transChords = chords.split(/\[ch\]|\[\/ch\]/g);
     let regex = [];
- 
-    switch (parsingStyle) {
-      case 'NORTHERN EUROPEAN':
-        parseOptions.naming = 'NorthernEuropean';
-        break;
 
-      case 'SOUTHERN EUROPEAN':
-        parseOptions.naming = 'SouthernEuropean';
-        break;
-
-      case 'NORMAL':
-      default:
-        break;
-    }
 
     for (let i = 1; i <= transChords.length; i += 2) {
       const chord = transChords[i];
@@ -284,82 +292,66 @@ function App() {
       .replace(/\[\/ch\](\w)/g, '[/ch] $1');
 
     setTransposedChords(transChords);
-  }, [transposeStep, chords, parsingStyle, halftoneStyle, simplify]);
+  }, [transposeStep, chords, halftoneStyle, simplify]);
       
   return (
     <>
       <div className="controls">
-        <Grid
-			  rows={["xsmall","auto","auto"]}
-			  columns={["medium","small","small"]}
-			  gap="small"
-			  areas={[
-					{ name: 'searchBox', start: [0, 0], end: [0, 1] },
-					{ name: 'searchButton', start: [1, 0], end: [1, 0] },
-					{ name: 'downloadButton', start: [1, 1], end: [1, 1] },
-					{ name: 'sliders', start: [2, 0], end: [2, 1] },
-					{ name: 'searchValues', start: [0, 2], end: [2, 2] },
-					{ name: 'searchComboBox', start: [0, 0], end: [1, 1] }
-					
-				  ]}
-			>
-			<Box gridArea="searchComboBox">
+        
+			
 			<form onSubmit={e =>loadSearch(e,1)} className="commentForm">
             
-			<Box gridArea="searchBox">
-                <TextInput value={search} onChange={e => setSearch(e.target.value)} />
-			</Box>
-			
-			<Box gridArea="searchButton">
-                <Button primary type="submit" label="Search" />
-			</Box>	
-			<Box gridArea="downloadButton">
-				<Button primary onClick={downloadPdf} label="Download PDF" />
-            </Box>
-			
+				<Box direction="row" gap="small">
+					<TextInput pad='small' placeholder="Artist or Song Name" value={search} onChange={e => setSearch(e.target.value)} />
+					<Button  pad='small' primary type="submit" label="Search" />
+				</Box>
+					{ postLoadState ? 
+					<Box direction="row" pad='small'>
+					  <Text>{`TRANSPOSE: ${transposeStep}`}</Text>
+					  <RangeInput
+						//style={{ minWidth: '100px' }}
+						min={-12}
+						max={12}
+						step={1}
+						value={transposeStep}
+						onChange={e => setTransposeStep(parseInt(e.currentTarget.value, 10))}
+					  />
+					  <Text>{`FONT: ${fontStep}`}</Text>
+					  <RangeInput
+						//style={{ minWidth: '100px' }}
+						min={1}
+						max={20}
+						step={1}
+						value={fontStep}
+						onChange={e => setFontStep(parseInt(e.currentTarget.value, 10))}
+					  />
+					  <Text>{`COLS: ${colStep}`}</Text>
+					  <RangeInput
+						//style={{ minWidth: '100px' }}
+						min={1}
+						max={3}
+						step={1}
+						value={colStep}
+						onChange={e => setColStep(parseInt(e.currentTarget.value, 10))}
+					  />
+					</Box>
+						
+					: null }		
 			</form>
-			</Box>
 			
-		<Box gridArea="searchValues">
+      </div>
+	  
+		<div className="spinner">{ searchState ? <Spinner /> : null }</div>
+			<Box direction="row" gap="small">
 			<div className="searchResults">{searchResults}</div>
-        </Box>
+			</Box>
         {/*<TextInput style={{display:"none", margin:0}} value={uri} onChange={e => setUri(e.target.value)} />*/}
 
-        <Box gridArea="sliders">
-          <Text>{`TRANSPOSE: ${transposeStep}`}</Text>
-          <RangeInput
-            style={{ minWidth: '100px' }}
-            min={-12}
-            max={12}
-            step={1}
-            value={transposeStep}
-            onChange={e => setTransposeStep(parseInt(e.currentTarget.value, 10))}
-          />
-		  <Text>{`FONT: ${fontStep}`}</Text>
-		  <RangeInput
-            style={{ minWidth: '100px' }}
-            min={1}
-            max={20}
-            step={1}
-            value={fontStep}
-            onChange={e => setFontStep(parseInt(e.currentTarget.value, 10))}
-          />
-		  <Text>{`COLS: ${colStep}`}</Text>
-		  <RangeInput
-            style={{ minWidth: '100px' }}
-            min={1}
-            max={3}
-            step={1}
-            value={colStep}
-            onChange={e => setColStep(parseInt(e.currentTarget.value, 10))}
-          />
-        </Box>
-		</Grid>
-
+{/*
         <Box className="box-2" pad="none" style={{ flexDirection: 'row' }}>
-            {/*<Button primary onClick={loadSong} label="LOAD SONG" />*/}
+            <Button primary onClick={loadSong} label="LOAD SONG" />
           
-        </Box>
+        </Box>*/}
 
         {/*  <Select
            options={['NORMAL', 'NORTHERN EUROPEAN', 'SOUTHERN EUROPEAN']}
@@ -383,12 +375,13 @@ function App() {
           />
         </Box>
         */}
-      </div>
 
       <div className="sheet">
         <div className="artist">{artist}</div>
         <div className="song">{song}</div>
         <div className="chordShapes">{chordShapes}</div>
+		
+		<div className="spinner">{ loadState ? <Spinner /> : null }</div>
 		<div className="grid-container">
             <div style={{fontSize: `${fontStep}px` }} id = "chords" className="chords grid-item" 
 				dangerouslySetInnerHTML={renderChords(transposedChords)
@@ -401,10 +394,11 @@ function App() {
 			[colStep===1 ? 6 : colStep===2 ? 6 : colStep===3?5:6]}>
 			</div>
 			</div>
+			{ postLoadState ? <Button primary onClick={downloadPdf} label="Download PDF" /> : null}
       </div>
 	  <div>
-	  <a href="http://www.carloacutis.com/">
-	  <img id="carlo-icon" src={require('./carlo2.png')} height="50px"/>
+	  <a target="_blank" rel="noopener noreferrer" href="http://www.carloacutis.com">
+	  <img alt="Bl. Carlo Acutis" id="carlo-icon" src={require('./carlo3.png')} height="40px"/>
 	  </a>
 	  </div>
     </>
