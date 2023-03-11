@@ -105,8 +105,8 @@ function App() {
 	setPostLoadState(false);
 	setPreSearchState(false);
 	setSearchState(true);
-
-	var url = `${corsURI}https://www.ultimate-guitar.com/search.php?search_type=title&page=${pge}&value=${encodeURIComponent(search)}`;
+	var url_param = `https://www.ultimate-guitar.com/search.php?search_type=title&page=${pge}&value=${encodeURIComponent(search)}`;
+	var url = `${corsURI}${encodeURIComponent(url_param)}`;
     console.log(url)
 	fetch(url)
       .then(res => res.text())
