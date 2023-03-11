@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/guitar/static/css/main.fc551b35.chunk.css",
-    "main.js": "/guitar/static/js/main.c1c7a842.chunk.js",
+    "main.js": "/guitar/static/js/main.3025ca2a.chunk.js",
     "runtime-main.js": "/guitar/static/js/runtime-main.a78e6f48.js",
-    "static/js/2.e3b92bdb.chunk.js": "/guitar/static/js/2.e3b92bdb.chunk.js",
+    "static/js/2.128cc88f.chunk.js": "/guitar/static/js/2.128cc88f.chunk.js",
     "index.html": "/guitar/index.html",
-    "precache-manifest.6be8b5a4a1d10c801ab2b1d25262ae6e.js": "/guitar/precache-manifest.6be8b5a4a1d10c801ab2b1d25262ae6e.js",
+    "precache-manifest.dddead498b8e2bb5992e8e39b68efd3f.js": "/guitar/precache-manifest.dddead498b8e2bb5992e8e39b68efd3f.js",
     "service-worker.js": "/guitar/service-worker.js",
-    "static/js/2.e3b92bdb.chunk.js.LICENSE.txt": "/guitar/static/js/2.e3b92bdb.chunk.js.LICENSE.txt",
+    "static/js/2.128cc88f.chunk.js.LICENSE.txt": "/guitar/static/js/2.128cc88f.chunk.js.LICENSE.txt",
     "static/media/carlo3.png": "/guitar/static/media/carlo3.7a28b3b8.png"
   },
   "entrypoints": [
     "static/js/runtime-main.a78e6f48.js",
-    "static/js/2.e3b92bdb.chunk.js",
+    "static/js/2.128cc88f.chunk.js",
     "static/css/main.fc551b35.chunk.css",
-    "static/js/main.c1c7a842.chunk.js"
+    "static/js/main.3025ca2a.chunk.js"
   ]
 }
